@@ -3,7 +3,11 @@ use bevy::{
     prelude::*,
     window::{PresentMode, WindowTheme},
 };
-use ridge_service::install_studio;
+use ridge_service::{
+    install_studio,
+    villains_usecase::{setup::*, ui::*},
+    yatsuhashi_usecase::{factory::*, lightup::lightup_yatsuhashi},
+};
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 enum GameState {
@@ -29,7 +33,17 @@ fn main() {
             }),
         )
         .add_state::<GameState>()
+        // 初期設定
         .add_systems(Startup, install_studio)
+        // フィールドタイルの設置
+        .add_systems(
+            OnEnter(GameState::InGame),
+            (create_yatsuhashies, install_villains),
+        )
+        .add_systems(
+            PostUpdate,
+            (start_enemy_animation, lightup_yatsuhashi).run_if(in_state(GameState::InGame)),
+        )
         .add_systems(Last, bevy::window::close_on_esc)
         .run();
 }
