@@ -41,7 +41,7 @@ impl YatsuhashiTaste {
 
 /// 八つ橋インデックス
 #[derive(Component, Default, Debug)]
-pub struct YatsuhashiIndex {
+pub struct YatsuhashiAddress {
     pub row: u8,
     pub col: u8,
 }
@@ -57,5 +57,5 @@ pub struct YatsuhashiBundle {
     /// 八つ橋の味
     pub taste: YatsuhashiTaste,
     /// 所在地
-    pub address: YatsuhashiIndex,
+    pub address: YatsuhashiAddress,
 }

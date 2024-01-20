@@ -1,7 +1,7 @@
 use crate::const_parameter::{SHIFTS, YATSUHASHI_SIZE};
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle, window::PrimaryWindow};
 use ridge_domain::ridge_yatsuhashi::yatsuhashi::{
-    YatsuhashiBundle, YatsuhashiIndex, YatsuhashiStolen, YatsuhashiTaste,
+    YatsuhashiAddress, YatsuhashiBundle, YatsuhashiStolen, YatsuhashiTaste,
 };
 /// 若干のmerginをとりつつ正三角形を密に配置
 pub fn create_yatsuhashies(
@@ -37,7 +37,7 @@ pub fn create_yatsuhashies(
                 .spawn(YatsuhashiBundle {
                     stolen: YatsuhashiStolen(5),
                     taste: YatsuhashiTaste::default(),
-                    address: YatsuhashiIndex {
+                    address: YatsuhashiAddress {
                         row: index as u8,
                         col: pivot,
                     },
@@ -47,7 +47,7 @@ pub fn create_yatsuhashies(
                     mesh: meshes
                         .add(shape::RegularPolygon::new(YATSUHASHI_SIZE, 3).into())
                         .into(),
-                    material: materials.add(ColorMaterial::from(Color::TURQUOISE)),
+                    material: materials.add(ColorMaterial::from(Color::WHITE)),
                     transform: Transform::from_translation(provice_hexagon(
                         index as u8,
                         pivot,
@@ -66,7 +66,7 @@ fn provice_hexagon(row: u8, col: u8, width: f32, height: f32, is_reverse: bool) 
     let dx = YATSUHASHI_SIZE * 1.5;
 
     let mut origin = Vec3::new(
-        -(width / 2.0) + dx * (col as f32),
+        -(width / 1.9) + dx * (col as f32),
         -(height / 4.0) + YATSUHASHI_SIZE * 2.0 * (row as f32),
         0.0,
     );
