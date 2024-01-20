@@ -21,3 +21,6 @@ opt-level = 3
 [workspace]
 resolver = "2"
 members = [".", "ridge-domain", "ridge-service"]
+
+[profile.release]
+opt-level = 'z'

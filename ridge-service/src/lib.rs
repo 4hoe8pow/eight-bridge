@@ -1,6 +1,7 @@
 // setup
 
 use bevy::prelude::*;
+pub mod const_parameter;
 pub mod hero_usecase;
 pub mod villains_usecase;
 pub mod yatsuhashi_usecase;
