@@ -47,8 +47,10 @@ pub struct YatsuhashiAddress {
 }
 
 /// 攻撃方向
-#[derive(Component)]
+#[derive(Component, Default, Debug, Clone)]
 pub enum YatsuhashiDirection {
+    #[default]
+    NoMove,
     EightOclock,
     FourOclock,
     TwoOclock,
@@ -67,4 +69,6 @@ pub struct YatsuhashiBundle {
     pub taste: YatsuhashiTaste,
     /// 所在地
     pub address: YatsuhashiAddress,
+    /// 進路
+    pub dirction: YatsuhashiDirection,
 }

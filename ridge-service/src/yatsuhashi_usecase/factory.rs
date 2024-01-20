@@ -1,10 +1,14 @@
 use crate::{
-    const_parameter::{CINNAMON_SPAWN_POINT, SHIFTS, YATSUHASHI_SIZE},
+    const_parameter::{
+        CINNAMON_SPAWN_POINT, MATCHA_SPAWN_POINT, RAMUNE_SPAWN_POINT, SHIFTS,
+        STRAWBERRY_SPAWN_POINT, YATSUHASHI_SIZE,
+    },
     villains_usecase::fire_yatsuhashi::FireEvent,
 };
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle, window::PrimaryWindow};
 use ridge_domain::ridge_yatsuhashi::yatsuhashi::{
-    Yatsuhashi, YatsuhashiAddress, YatsuhashiBundle, YatsuhashiStolen, YatsuhashiTaste,
+    Yatsuhashi, YatsuhashiAddress, YatsuhashiBundle, YatsuhashiDirection, YatsuhashiStolen,
+    YatsuhashiTaste,
 };
 /// 若干のmerginをとりつつ正三角形を密に配置
 pub fn create_yatsuhashies(
@@ -96,24 +100,36 @@ fn is_even(num: i8) -> bool {
 
 pub fn fire(
     mut fires: EventReader<FireEvent>,
-    mut yatsuhashies: Query<(&mut YatsuhashiTaste, &mut YatsuhashiAddress), With<Yatsuhashi>>,
+    mut yatsuhashies: Query<
+        (
+            &mut YatsuhashiTaste,
+            &mut YatsuhashiAddress,
+            &mut YatsuhashiDirection,
+        ),
+        With<Yatsuhashi>,
+    >,
 ) {
     for fires in fires.read() {
         let fire_taste = &fires.taste;
 
-        let fire_address = match *fire_taste {
-            YatsuhashiTaste::Tasteless => todo!(),
-            YatsuhashiTaste::Sesami => todo!(),
-            YatsuhashiTaste::Cinnamon => CINNAMON_SPAWN_POINT,
-            YatsuhashiTaste::Matcha => todo!(),
-            YatsuhashiTaste::Ramune => todo!(),
-            YatsuhashiTaste::Strawberry => todo!(),
+        let (fire_address, fire_direction) = match *fire_taste {
+            YatsuhashiTaste::Cinnamon => (CINNAMON_SPAWN_POINT, YatsuhashiDirection::EightOclock),
+            YatsuhashiTaste::Matcha => (MATCHA_SPAWN_POINT, YatsuhashiDirection::FourOclock),
+            YatsuhashiTaste::Ramune => (RAMUNE_SPAWN_POINT, YatsuhashiDirection::TwoOclock),
+            YatsuhashiTaste::Strawberry => (STRAWBERRY_SPAWN_POINT, YatsuhashiDirection::TenOclock),
+            _ => (
+                YatsuhashiAddress { row: 0, col: 0 },
+                YatsuhashiDirection::NoMove,
+            ),
         };
         yatsuhashies
             .iter_mut()
-            .filter(|(_, address)| {
+            .filter(|(_, address, _)| {
                 address.row == fire_address.row && address.col == fire_address.col
             })
-            .for_each(|(mut taste, _)| *taste = fire_taste.clone());
+            .for_each(|(mut taste, _, mut direction)| {
+                *taste = fire_taste.clone();
+                *direction = fire_direction.clone();
+            });
     }
 }
