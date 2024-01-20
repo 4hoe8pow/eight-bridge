@@ -1,4 +1,4 @@
-use crate::const_parameter::{COL_MAX, ROW_MAX, YATSUHASHI_SIZE};
+use crate::const_parameter::{SHIFTS, YATSUHASHI_SIZE};
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle, window::PrimaryWindow};
 use ridge_domain::ridge_yatsuhashi::yatsuhashi::{
     YatsuhashiBundle, YatsuhashiIndex, YatsuhashiStolen, YatsuhashiTaste,
@@ -11,17 +11,36 @@ pub fn create_yatsuhashies(
     window_query: Query<&Window, With<PrimaryWindow>>,
 ) {
     let (width, height) = (
-        window_query.single().width() / 2.0,
-        window_query.single().height() / 2.0,
+        window_query.single().width(),
+        window_query.single().height(),
     );
+    let mut is_reverse = false;
 
-    (1..=ROW_MAX).for_each(|i| {
-        (1..=COL_MAX).for_each(|j| {
+    SHIFTS.iter().enumerate().for_each(|(index, &shift)| {
+        (0..=shift).for_each(|pivot| {
+            // 反転の判定
+            if (index < 6 && is_even(pivot)) || (index >= 6 && !is_even(pivot)) {
+                is_reverse = true;
+            } else {
+                is_reverse = false;
+            };
+
+            // 反転の定義
+            let reverse_half = if is_reverse {
+                Transform::from_rotation(Quat::from_rotation_z((180.0_f32).to_radians()))
+            } else {
+                Transform::from_rotation(Quat::from_rotation_z((0.0_f32).to_radians()))
+            };
+
+            // 八つ橋の設置
             commands
                 .spawn(YatsuhashiBundle {
                     stolen: YatsuhashiStolen(5),
                     taste: YatsuhashiTaste::default(),
-                    address: YatsuhashiIndex { row: i, col: j },
+                    address: YatsuhashiIndex {
+                        row: index as u8,
+                        col: pivot,
+                    },
                     ..default()
                 })
                 .insert(MaterialMesh2dBundle {
@@ -29,13 +48,45 @@ pub fn create_yatsuhashies(
                         .add(shape::RegularPolygon::new(YATSUHASHI_SIZE, 3).into())
                         .into(),
                     material: materials.add(ColorMaterial::from(Color::TURQUOISE)),
-                    transform: Transform::from_translation(Vec3::new(
-                        -width + (YATSUHASHI_SIZE * 2.1) * (i as f32),
-                        -height + (YATSUHASHI_SIZE * 2.1) * (j as f32),
-                        0.,
-                    )),
+                    transform: Transform::from_translation(provice_hexagon(
+                        index as u8,
+                        pivot,
+                        width,
+                        height,
+                        is_reverse,
+                    ))
+                    .mul_transform(reverse_half),
                     ..default()
                 });
         })
     });
+}
+
+fn provice_hexagon(row: u8, col: u8, width: f32, height: f32, is_reverse: bool) -> Vec3 {
+    let dx = YATSUHASHI_SIZE * 1.5;
+
+    let mut origin = Vec3::new(
+        -(width / 2.0) + dx * (col as f32),
+        -(height / 4.0) + YATSUHASHI_SIZE * 2.0 * (row as f32),
+        0.0,
+    );
+
+    match row {
+        0 | 11 => origin.x += dx * 5.0,
+        1 | 10 => origin.x += dx * 4.0,
+        2 | 9 => origin.x += dx * 3.0,
+        3 | 8 => origin.x += dx * 2.0,
+        4 | 7 => origin.x += dx * 1.0,
+        _ => (),
+    }
+
+    if is_reverse {
+        origin.y += YATSUHASHI_SIZE / 2.0;
+    }
+
+    origin
+}
+
+fn is_even(num: u8) -> bool {
+    num % 2 == 0
 }
