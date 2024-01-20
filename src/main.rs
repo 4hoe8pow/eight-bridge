@@ -4,6 +4,7 @@ use bevy::{
     window::{PresentMode, WindowTheme},
 };
 use ridge_service::{
+    hero_usecase::create_hero::set_hero,
     install_studio,
     villains_usecase::{setup::*, ui::*},
     yatsuhashi_usecase::{factory::*, lightup::lightup_yatsuhashi},
@@ -38,7 +39,7 @@ fn main() {
         // フィールドタイルの設置
         .add_systems(
             OnEnter(GameState::InGame),
-            (create_yatsuhashies, install_villains),
+            (create_yatsuhashies, install_villains, set_hero),
         )
         .add_systems(
             PostUpdate,
