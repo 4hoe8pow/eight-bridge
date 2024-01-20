@@ -42,8 +42,8 @@ impl YatsuhashiTaste {
 /// 八つ橋インデックス
 #[derive(Component, Default, Debug)]
 pub struct YatsuhashiAddress {
-    pub row: u8,
-    pub col: u8,
+    pub row: i8,
+    pub col: i8,
 }
 
 #[derive(Bundle, Default)]

@@ -38,7 +38,7 @@ pub fn create_yatsuhashies(
                     stolen: YatsuhashiStolen(5),
                     taste: YatsuhashiTaste::default(),
                     address: YatsuhashiAddress {
-                        row: index as u8,
+                        row: index as i8,
                         col: pivot,
                     },
                     ..default()
@@ -49,7 +49,7 @@ pub fn create_yatsuhashies(
                         .into(),
                     material: materials.add(ColorMaterial::from(Color::WHITE)),
                     transform: Transform::from_translation(provice_hexagon(
-                        index as u8,
+                        index as i8,
                         pivot,
                         width,
                         height,
@@ -62,11 +62,11 @@ pub fn create_yatsuhashies(
     });
 }
 
-fn provice_hexagon(row: u8, col: u8, width: f32, height: f32, is_reverse: bool) -> Vec3 {
+fn provice_hexagon(row: i8, col: i8, width: f32, height: f32, is_reverse: bool) -> Vec3 {
     let dx = YATSUHASHI_SIZE * 1.5;
 
     let mut origin = Vec3::new(
-        -(width / 1.9) + dx * (col as f32),
+        -(width / 2.1) + dx * (col as f32),
         -(height / 4.0) + YATSUHASHI_SIZE * 2.0 * (row as f32),
         0.0,
     );
@@ -87,6 +87,6 @@ fn provice_hexagon(row: u8, col: u8, width: f32, height: f32, is_reverse: bool) 
     origin
 }
 
-fn is_even(num: u8) -> bool {
+fn is_even(num: i8) -> bool {
     num % 2 == 0
 }

@@ -4,7 +4,7 @@ use bevy::{
     window::{PresentMode, WindowTheme},
 };
 use ridge_service::{
-    hero_usecase::create_hero::set_hero,
+    hero_usecase::{create_hero::set_hero, operate_hero::operate_hero},
     install_studio,
     villains_usecase::{setup::*, ui::*},
     yatsuhashi_usecase::{factory::*, lightup::lightup_yatsuhashi},
@@ -41,6 +41,7 @@ fn main() {
             OnEnter(GameState::InGame),
             (create_yatsuhashies, install_villains, set_hero),
         )
+        .add_systems(Update, (operate_hero).run_if(in_state(GameState::InGame)))
         .add_systems(
             PostUpdate,
             (start_enemy_animation, lightup_yatsuhashi).run_if(in_state(GameState::InGame)),

@@ -7,6 +7,6 @@ pub struct Hero;
 /// 操作基準
 #[derive(Resource)]
 pub struct HeroPosition {
-    pub row: u8,
-    pub col: u8,
+    pub row: i8,
+    pub col: i8,
 }
