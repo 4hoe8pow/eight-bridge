@@ -16,31 +16,36 @@ pub fn operate_hero(
         .for_each(|(mut taste, _)| *taste = YatsuhashiTaste::default());
 
     if keys.any_just_pressed([KeyCode::W, KeyCode::Up]) {
-        hero_position.row += 1;
+        hero_position.migrate(1, 0);
         if hero_position.row > 6 {
-            hero_position.col -= 1;
+            hero_position.migrate(0, -1);
         } else if hero_position.row < 6 {
-            hero_position.col += 1;
+            hero_position.migrate(0, 1);
         }
     }
     if keys.any_just_pressed([KeyCode::A, KeyCode::Left]) {
-        hero_position.col -= 1;
+        hero_position.migrate(0, -1);
     }
     if keys.any_just_pressed([KeyCode::S, KeyCode::Down]) {
-        hero_position.row -= 1;
+        hero_position.migrate(-1, 0);
         if hero_position.row > 5 {
-            hero_position.col += 1;
+            hero_position.migrate(0, 1);
         } else if hero_position.row < 5 {
-            hero_position.col -= 1;
+            hero_position.migrate(0, -1);
         }
     }
     if keys.any_just_pressed([KeyCode::D, KeyCode::Right]) {
         hero_position.col += 1;
     }
 
-    // Heroposition === YatsuhashiAddress にマッチする三角形をゴマ味に変更
-    yatsuhashies
-        .iter_mut()
-        .filter(|(_, address)| address.row == hero_position.row && address.col == hero_position.col)
-        .for_each(|(mut taste, _)| *taste = YatsuhashiTaste::Sesami);
+    for (mut taste, address) in yatsuhashies.iter_mut() {
+        if address.row == hero_position.row && address.col == hero_position.col {
+            // 次の八つ橋が無味でなければ、ヒーローポジショニングを戻す
+            if *taste != YatsuhashiTaste::default() {
+                hero_position.revert();
+            } else {
+                *taste = YatsuhashiTaste::Sesami;
+            }
+        }
+    }
 }

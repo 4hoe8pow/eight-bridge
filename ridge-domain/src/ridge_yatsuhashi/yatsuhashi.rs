@@ -10,7 +10,7 @@ pub struct Yatsuhashi;
 pub struct YatsuhashiStolen(pub u8);
 
 /// 八つ橋の味ないし色
-#[derive(Component, Default, Debug, Clone)]
+#[derive(Component, Default, Debug, Clone, PartialEq)]
 pub enum YatsuhashiTaste {
     /// 透明
     #[default]
