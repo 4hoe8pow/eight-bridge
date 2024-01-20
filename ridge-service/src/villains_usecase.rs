@@ -1,4 +1,4 @@
 // 敵の設置
-pub mod setup;
-// 時限制の八つ橋製造命令
-pub mod ui;
+pub mod count_timer;
+pub mod fire_yatsuhashi;
+pub mod setup_villains;

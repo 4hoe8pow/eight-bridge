@@ -46,6 +46,15 @@ pub struct YatsuhashiAddress {
     pub col: i8,
 }
 
+/// 攻撃方向
+#[derive(Component)]
+pub enum YatsuhashiDirection {
+    EightOclock,
+    FourOclock,
+    TwoOclock,
+    TenOclock,
+}
+
 #[derive(Bundle, Default)]
 // タイル
 pub struct YatsuhashiBundle {

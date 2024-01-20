@@ -1,7 +1,10 @@
-use crate::const_parameter::{SHIFTS, YATSUHASHI_SIZE};
+use crate::{
+    const_parameter::{CINNAMON_SPAWN_POINT, SHIFTS, YATSUHASHI_SIZE},
+    villains_usecase::fire_yatsuhashi::FireEvent,
+};
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle, window::PrimaryWindow};
 use ridge_domain::ridge_yatsuhashi::yatsuhashi::{
-    YatsuhashiAddress, YatsuhashiBundle, YatsuhashiStolen, YatsuhashiTaste,
+    Yatsuhashi, YatsuhashiAddress, YatsuhashiBundle, YatsuhashiStolen, YatsuhashiTaste,
 };
 /// 若干のmerginをとりつつ正三角形を密に配置
 pub fn create_yatsuhashies(
@@ -89,4 +92,28 @@ fn provice_hexagon(row: i8, col: i8, width: f32, height: f32, is_reverse: bool) 
 
 fn is_even(num: i8) -> bool {
     num % 2 == 0
+}
+
+pub fn fire(
+    mut fires: EventReader<FireEvent>,
+    mut yatsuhashies: Query<(&mut YatsuhashiTaste, &mut YatsuhashiAddress), With<Yatsuhashi>>,
+) {
+    for fires in fires.read() {
+        let fire_taste = &fires.taste;
+
+        let fire_address = match *fire_taste {
+            YatsuhashiTaste::Tasteless => todo!(),
+            YatsuhashiTaste::Sesami => todo!(),
+            YatsuhashiTaste::Cinnamon => CINNAMON_SPAWN_POINT,
+            YatsuhashiTaste::Matcha => todo!(),
+            YatsuhashiTaste::Ramune => todo!(),
+            YatsuhashiTaste::Strawberry => todo!(),
+        };
+        yatsuhashies
+            .iter_mut()
+            .filter(|(_, address)| {
+                address.row == fire_address.row && address.col == fire_address.col
+            })
+            .for_each(|(mut taste, _)| *taste = fire_taste.clone());
+    }
 }

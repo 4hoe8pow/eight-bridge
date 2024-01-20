@@ -6,7 +6,11 @@ use bevy::{
 use ridge_service::{
     hero_usecase::{create_hero::set_hero, operate_hero::operate_hero},
     install_studio,
-    villains_usecase::{setup::*, ui::*},
+    villains_usecase::{
+        count_timer::start_timer,
+        fire_yatsuhashi::{cinnamon_timer_finished, FireEvent},
+        setup_villains::*,
+    },
     yatsuhashi_usecase::{factory::*, lightup::lightup_yatsuhashi},
 };
 
@@ -34,14 +38,18 @@ fn main() {
             }),
         )
         .add_state::<GameState>()
+        .add_event::<FireEvent>()
         // 初期設定
         .add_systems(Startup, install_studio)
         // フィールドタイルの設置
         .add_systems(
             OnEnter(GameState::InGame),
-            (create_yatsuhashies, install_villains, set_hero),
+            (create_yatsuhashies, install_villains, set_hero, start_timer),
         )
-        .add_systems(Update, (operate_hero).run_if(in_state(GameState::InGame)))
+        .add_systems(
+            Update,
+            (operate_hero, cinnamon_timer_finished, fire).run_if(in_state(GameState::InGame)),
+        )
         .add_systems(
             PostUpdate,
             (start_enemy_animation, lightup_yatsuhashi).run_if(in_state(GameState::InGame)),

@@ -10,8 +10,8 @@ pub fn lightup_yatsuhashi(
         let material = materials.get_mut(yatsuhashi_handle).unwrap();
 
         match taste {
-            YatsuhashiTaste::Tasteless => material.color = Color::rgba_u8(255, 255, 255, 0),
-            YatsuhashiTaste::Sesami => material.color = Color::rgb_u8(44, 51, 62),
+            YatsuhashiTaste::Tasteless => material.color = Color::rgb_u8(44, 51, 62),
+            YatsuhashiTaste::Sesami => material.color = Color::GOLD,
             YatsuhashiTaste::Cinnamon => material.color = Color::rgb_u8(255, 190, 152),
             YatsuhashiTaste::Matcha => material.color = Color::rgb_u8(0, 161, 112),
             YatsuhashiTaste::Ramune => material.color = Color::rgb_u8(158, 180, 211),

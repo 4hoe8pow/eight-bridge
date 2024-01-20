@@ -1,8 +1,5 @@
 use bevy::prelude::*;
-use ridge_domain::{
-    ridge_hero::hero::HeroPosition,
-    ridge_yatsuhashi::yatsuhashi::{Yatsuhashi, YatsuhashiAddress, YatsuhashiTaste},
-};
+use ridge_domain::ridge_hero::hero::HeroPosition;
 
 /// ヒーローポジショニング
 pub fn set_hero(mut commands: Commands) {
