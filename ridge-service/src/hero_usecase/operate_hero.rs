@@ -35,7 +35,7 @@ pub fn operate_hero(
         }
     }
     if keys.any_just_pressed([KeyCode::D, KeyCode::Right]) {
-        hero_position.col += 1;
+        hero_position.migrate(0, 1);
     }
 
     for (mut taste, address) in yatsuhashies.iter_mut() {

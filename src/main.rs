@@ -11,7 +11,11 @@ use ridge_service::{
         fire_yatsuhashi::{cinnamon_timer_finished, FireEvent},
         setup_villains::*,
     },
-    yatsuhashi_usecase::{factory::*, lightup::lightup_yatsuhashi},
+    yatsuhashi_usecase::{
+        factory::*,
+        lightup::lightup_yatsuhashi,
+        migrate::{pop_yatsuhashi, push_yatsuhashi, YatsuhashiQueueEvent},
+    },
 };
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
@@ -39,6 +43,7 @@ fn main() {
         )
         .add_state::<GameState>()
         .add_event::<FireEvent>()
+        .add_event::<YatsuhashiQueueEvent>()
         // 初期設定
         .add_systems(Startup, install_studio)
         // フィールドタイルの設置
@@ -48,11 +53,13 @@ fn main() {
         )
         .add_systems(
             Update,
-            (operate_hero, cinnamon_timer_finished, fire).run_if(in_state(GameState::InGame)),
+            (operate_hero, cinnamon_timer_finished, fire, push_yatsuhashi)
+                .run_if(in_state(GameState::InGame)),
         )
         .add_systems(
             PostUpdate,
-            (start_enemy_animation, lightup_yatsuhashi).run_if(in_state(GameState::InGame)),
+            (start_enemy_animation, lightup_yatsuhashi, pop_yatsuhashi)
+                .run_if(in_state(GameState::InGame)),
         )
         .add_systems(Last, bevy::window::close_on_esc)
         .run();

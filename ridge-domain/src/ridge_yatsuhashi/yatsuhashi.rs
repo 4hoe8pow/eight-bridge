@@ -40,14 +40,82 @@ impl YatsuhashiTaste {
 }
 
 /// 八つ橋インデックス
-#[derive(Component, Default, Debug)]
+#[derive(Component, Default, Debug, Clone, PartialEq)]
 pub struct YatsuhashiAddress {
     pub row: i8,
     pub col: i8,
 }
 
+impl YatsuhashiAddress {
+    pub fn in_field(&self) -> bool {
+        match self.row {
+            0 | 11 if (0..=12).contains(&self.col) => true,
+            1 | 10 if (0..=14).contains(&self.col) => true,
+            2 | 9 if (0..=16).contains(&self.col) => true,
+            3 | 8 if (0..=18).contains(&self.col) => true,
+            4 | 7 if (0..=20).contains(&self.col) => true,
+            5 | 6 if (0..=22).contains(&self.col) => true,
+            _ => false,
+        }
+    }
+
+    pub fn reflect(&self, direction: YatsuhashiDirection) -> YatsuhashiDirection {
+        match (self.col, self.row, direction) {
+            (col, row, YatsuhashiDirection::NineOclock) if col < 0 && row > 5 => {
+                YatsuhashiDirection::FourOclock
+            }
+            (col, row, YatsuhashiDirection::TenOclock) if col < 0 && row > 5 => {
+                YatsuhashiDirection::ThreeOclock
+            }
+            (col, row, YatsuhashiDirection::EightOclock) if col < 0 && row <= 5 => {
+                YatsuhashiDirection::ThreeOclock
+            }
+            (col, row, YatsuhashiDirection::NineOclock) if col < 0 && row <= 5 => {
+                YatsuhashiDirection::TwoOclock
+            }
+            (_, row, YatsuhashiDirection::FourOclock) if row < 0 => YatsuhashiDirection::TwoOclock,
+            (_, _, YatsuhashiDirection::TenOclock) if self.row < 0 => {
+                YatsuhashiDirection::TenOclock
+            }
+            (_, _, YatsuhashiDirection::TwoOclock) if self.row > 11 => {
+                YatsuhashiDirection::EightOclock
+            }
+            (_, _, _) => YatsuhashiDirection::FourOclock, // デフォルトの場合
+        }
+    }
+
+    pub fn foo_refelect(&self, direction: YatsuhashiDirection) -> YatsuhashiDirection {
+        let mut next_direction = YatsuhashiDirection::default();
+        if self.col < 0 {
+            if self.row > 5 && direction == YatsuhashiDirection::NineOclock {
+                next_direction = YatsuhashiDirection::FourOclock;
+            } else if self.row > 5 && direction == YatsuhashiDirection::TenOclock {
+                next_direction = YatsuhashiDirection::ThreeOclock;
+            } else if self.row <= 5 && direction == YatsuhashiDirection::EightOclock {
+                next_direction = YatsuhashiDirection::ThreeOclock;
+            } else if self.row <= 5 && direction == YatsuhashiDirection::NineOclock {
+                next_direction = YatsuhashiDirection::TwoOclock;
+            }
+        } else if self.row < 0 {
+            if direction == YatsuhashiDirection::FourOclock {
+                next_direction = YatsuhashiDirection::TwoOclock;
+            } else {
+                next_direction = YatsuhashiDirection::TenOclock;
+            }
+        } else if self.row > 11 {
+            if direction == YatsuhashiDirection::TwoOclock {
+                next_direction = YatsuhashiDirection::EightOclock;
+            } else {
+                next_direction = YatsuhashiDirection::FourOclock;
+            }
+        }
+
+        next_direction
+    }
+}
+
 /// 攻撃方向
-#[derive(Component, Default, Debug, Clone)]
+#[derive(Component, Default, Debug, Clone, PartialEq)]
 pub enum YatsuhashiDirection {
     #[default]
     NoMove,
@@ -55,6 +123,8 @@ pub enum YatsuhashiDirection {
     FourOclock,
     TwoOclock,
     TenOclock,
+    ThreeOclock,
+    NineOclock,
 }
 
 #[derive(Bundle, Default)]
