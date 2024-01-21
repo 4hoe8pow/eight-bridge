@@ -60,28 +60,104 @@ impl YatsuhashiAddress {
     }
 
     pub fn reflect(&self, direction: YatsuhashiDirection) -> YatsuhashiDirection {
-        match (self.col, self.row, direction) {
-            (col, row, YatsuhashiDirection::NineOclock) if col < 0 && row > 5 => {
-                YatsuhashiDirection::FourOclock
+        let mut next_direction = YatsuhashiDirection::default();
+        if self.col < 0 {
+            if self.row > 5 && direction == YatsuhashiDirection::NineOclock {
+                next_direction = YatsuhashiDirection::FourOclock;
+            } else if self.row > 5 && direction == YatsuhashiDirection::TenOclock {
+                next_direction = YatsuhashiDirection::ThreeOclock;
+            } else if self.row <= 5 && direction == YatsuhashiDirection::EightOclock {
+                next_direction = YatsuhashiDirection::ThreeOclock;
+            } else if self.row <= 5 && direction == YatsuhashiDirection::NineOclock {
+                next_direction = YatsuhashiDirection::TwoOclock;
             }
-            (col, row, YatsuhashiDirection::TenOclock) if col < 0 && row > 5 => {
-                YatsuhashiDirection::ThreeOclock
+        } else if self.row < 0 {
+            if direction == YatsuhashiDirection::FourOclock {
+                next_direction = YatsuhashiDirection::TwoOclock;
+            } else {
+                next_direction = YatsuhashiDirection::TenOclock;
             }
-            (col, row, YatsuhashiDirection::EightOclock) if col < 0 && row <= 5 => {
-                YatsuhashiDirection::ThreeOclock
+        } else if self.row > 11 {
+            if direction == YatsuhashiDirection::TwoOclock {
+                next_direction = YatsuhashiDirection::EightOclock;
+            } else {
+                next_direction = YatsuhashiDirection::FourOclock;
             }
-            (col, row, YatsuhashiDirection::NineOclock) if col < 0 && row <= 5 => {
-                YatsuhashiDirection::TwoOclock
+        } else if self.row == 0 && self.col > 11 {
+            if direction == YatsuhashiDirection::ThreeOclock {
+                next_direction = YatsuhashiDirection::TenOclock;
+            } else {
+                next_direction = YatsuhashiDirection::NineOclock;
             }
-            (_, row, YatsuhashiDirection::FourOclock) if row < 0 => YatsuhashiDirection::TwoOclock,
-            (_, _, YatsuhashiDirection::TenOclock) if self.row < 0 => {
-                YatsuhashiDirection::TenOclock
+        } else if self.row == 1 && self.col > 13 {
+            if direction == YatsuhashiDirection::ThreeOclock {
+                next_direction = YatsuhashiDirection::TenOclock;
+            } else {
+                next_direction = YatsuhashiDirection::NineOclock;
             }
-            (_, _, YatsuhashiDirection::TwoOclock) if self.row > 11 => {
-                YatsuhashiDirection::EightOclock
+        } else if self.row == 2 && self.col > 15 {
+            if direction == YatsuhashiDirection::ThreeOclock {
+                next_direction = YatsuhashiDirection::TenOclock;
+            } else {
+                next_direction = YatsuhashiDirection::NineOclock;
             }
-            (_, _, _) => YatsuhashiDirection::FourOclock, // デフォルトの場合
+        } else if self.row == 3 && self.col > 17 {
+            if direction == YatsuhashiDirection::ThreeOclock {
+                next_direction = YatsuhashiDirection::TenOclock;
+            } else {
+                next_direction = YatsuhashiDirection::NineOclock;
+            }
+        } else if self.row == 4 && self.col > 19 {
+            if direction == YatsuhashiDirection::ThreeOclock {
+                next_direction = YatsuhashiDirection::TenOclock;
+            } else {
+                next_direction = YatsuhashiDirection::NineOclock;
+            }
+        } else if self.row == 5 && self.col > 21 {
+            if direction == YatsuhashiDirection::ThreeOclock {
+                next_direction = YatsuhashiDirection::TenOclock;
+            } else {
+                next_direction = YatsuhashiDirection::NineOclock;
+            }
+        } else if self.row == 6 && self.col > 21 {
+            if direction == YatsuhashiDirection::ThreeOclock {
+                next_direction = YatsuhashiDirection::EightOclock;
+            } else {
+                next_direction = YatsuhashiDirection::NineOclock;
+            }
+        } else if self.row == 7 && self.col > 19 {
+            if direction == YatsuhashiDirection::ThreeOclock {
+                next_direction = YatsuhashiDirection::EightOclock;
+            } else {
+                next_direction = YatsuhashiDirection::NineOclock;
+            }
+        } else if self.row == 8 && self.col > 17 {
+            if direction == YatsuhashiDirection::ThreeOclock {
+                next_direction = YatsuhashiDirection::EightOclock;
+            } else {
+                next_direction = YatsuhashiDirection::NineOclock;
+            }
+        } else if self.row == 9 && self.col > 15 {
+            if direction == YatsuhashiDirection::ThreeOclock {
+                next_direction = YatsuhashiDirection::EightOclock;
+            } else {
+                next_direction = YatsuhashiDirection::NineOclock;
+            }
+        } else if self.row == 10 && self.col > 13 {
+            if direction == YatsuhashiDirection::ThreeOclock {
+                next_direction = YatsuhashiDirection::EightOclock;
+            } else {
+                next_direction = YatsuhashiDirection::NineOclock;
+            }
+        } else if self.row == 11 && self.col > 11 {
+            if direction == YatsuhashiDirection::ThreeOclock {
+                next_direction = YatsuhashiDirection::EightOclock;
+            } else {
+                next_direction = YatsuhashiDirection::NineOclock;
+            }
         }
+
+        next_direction
     }
 
     pub fn foo_refelect(&self, direction: YatsuhashiDirection) -> YatsuhashiDirection {

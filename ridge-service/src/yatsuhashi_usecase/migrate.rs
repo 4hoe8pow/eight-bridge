@@ -103,7 +103,7 @@ pub fn push_yatsuhashi(
             eprintln!("OUT-FIELD:{:?}", next_address);
             event.send(YatsuhashiQueueEvent {
                 current: current_address.clone(),
-                next: next_address.clone(),
+                next: current_address.clone(),
                 migrate_taste: taste.clone(),
                 migrate_direction: next_address.clone().reflect(direction.clone()),
             })
