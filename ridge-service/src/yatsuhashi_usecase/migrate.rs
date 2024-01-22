@@ -27,7 +27,7 @@ pub fn push_yatsuhashi(
 ) {
     // a. 次の八つ橋の場所をしらべる
     for (direction, current_address, taste) in yatsuhashies.iter() {
-        let next_address = match *direction {
+        let next_address: Option<YatsuhashiAddress> = match *direction {
             YatsuhashiDirection::EightOclock => {
                 let (drow, dcol) = if current_address.row < 6 {
                     (-1, -2)
@@ -36,10 +36,10 @@ pub fn push_yatsuhashi(
                 } else {
                     (-1, 0)
                 };
-                YatsuhashiAddress {
+                Some(YatsuhashiAddress {
                     row: current_address.row + drow,
                     col: current_address.col + dcol,
-                }
+                })
             }
             YatsuhashiDirection::FourOclock => {
                 let (drow, dcol) = if current_address.row < 6 {
@@ -49,10 +49,10 @@ pub fn push_yatsuhashi(
                 } else {
                     (-1, 0)
                 };
-                YatsuhashiAddress {
+                Some(YatsuhashiAddress {
                     row: current_address.row + drow,
                     col: current_address.col + dcol,
-                }
+                })
             }
             YatsuhashiDirection::TwoOclock => {
                 let (drow, dcol) = if current_address.row > 5 {
@@ -62,10 +62,10 @@ pub fn push_yatsuhashi(
                 } else {
                     (1, 0)
                 };
-                YatsuhashiAddress {
+                Some(YatsuhashiAddress {
                     row: current_address.row + drow,
                     col: current_address.col + dcol,
-                }
+                })
             }
             YatsuhashiDirection::TenOclock => {
                 let (drow, dcol) = if current_address.row > 5 {
@@ -75,38 +75,39 @@ pub fn push_yatsuhashi(
                 } else {
                     (1, 0)
                 };
-                YatsuhashiAddress {
+                Some(YatsuhashiAddress {
                     row: current_address.row + drow,
                     col: current_address.col + dcol,
-                }
+                })
             }
-            YatsuhashiDirection::ThreeOclock => YatsuhashiAddress {
+            YatsuhashiDirection::ThreeOclock => Some(YatsuhashiAddress {
                 row: current_address.row,
                 col: current_address.col + 1,
-            },
-            YatsuhashiDirection::NineOclock => YatsuhashiAddress {
+            }),
+            YatsuhashiDirection::NineOclock => Some(YatsuhashiAddress {
                 row: current_address.row,
                 col: current_address.col - 1,
-            },
-            _ => YatsuhashiAddress::default(),
+            }),
+            //実在する番地を返すと動いてしまう
+            YatsuhashiDirection::NoMove => None,
         };
 
-        if next_address.in_field() {
-            eprintln!("IN-FIELD:{:?}", next_address);
-            event.send(YatsuhashiQueueEvent {
-                current: current_address.clone(),
-                next: next_address.clone(),
-                migrate_taste: taste.clone(),
-                migrate_direction: direction.clone(),
-            })
-        } else {
-            eprintln!("OUT-FIELD:{:?}", next_address);
-            event.send(YatsuhashiQueueEvent {
-                current: current_address.clone(),
-                next: current_address.clone(),
-                migrate_taste: taste.clone(),
-                migrate_direction: next_address.clone().reflect(direction.clone()),
-            })
+        if next_address.is_some() {
+            if next_address.clone().unwrap().in_field() {
+                event.send(YatsuhashiQueueEvent {
+                    current: current_address.clone(),
+                    next: next_address.clone().unwrap(),
+                    migrate_taste: taste.clone(),
+                    migrate_direction: direction.clone(),
+                })
+            } else {
+                event.send(YatsuhashiQueueEvent {
+                    current: current_address.clone(),
+                    next: current_address.clone(),
+                    migrate_taste: taste.clone(),
+                    migrate_direction: next_address.clone().unwrap().reflect(direction.clone()),
+                })
+            }
         }
     }
 }
@@ -139,7 +140,7 @@ pub fn pop_yatsuhashi(
                 // 次の八つ橋が無味 => 今の味と方向をコピー
                 if address == *next && *taste == YatsuhashiTaste::default() {
                     *taste = migrate_taste.clone();
-                    *direction = migrate_direction.clone()
+                    *direction = migrate_direction.clone();
                 }
                 // 今の八つ橋がヒーロー以外の味 => 味と方向を消去
                 else if address == *current
@@ -150,8 +151,7 @@ pub fn pop_yatsuhashi(
                     *direction = YatsuhashiDirection::NoMove;
                 }
                 // 次の八つ橋がヒーロー => 結合
-                else if address == *next && *taste == YatsuhashiTaste::Sesami{
-                    
+                else if address == *next && *taste == YatsuhashiTaste::Sesami {
                 }
             });
     }
