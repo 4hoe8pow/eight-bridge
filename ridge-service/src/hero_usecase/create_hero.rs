@@ -6,7 +6,7 @@ pub fn set_hero(mut commands: Commands) {
     commands.insert_resource(HeroPosition {
         row: 0,
         col: 6,
-        past_row: 0,
-        past_col: 0,
+        past_row: -1,
+        past_col: -1,
     });
 }

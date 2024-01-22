@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use ridge_domain::{
-    ridge_hero::hero::HeroPosition,
+    ridge_hero::hero::{self, HeroPosition},
     ridge_yatsuhashi::yatsuhashi::{Yatsuhashi, YatsuhashiAddress, YatsuhashiTaste},
 };
 
@@ -39,13 +39,11 @@ pub fn operate_hero(
     }
 
     for (mut taste, address) in yatsuhashies.iter_mut() {
-        if address.row == hero_position.row && address.col == hero_position.col {
-            // 次の八つ橋が無味でなければ、ヒーローポジショニングを戻す
-            if *taste != YatsuhashiTaste::default() {
-                hero_position.revert();
-            } else {
+
+        if address.row == hero_position.row
+            && address.col == hero_position.col
+            && *taste == YatsuhashiTaste::default(){
                 *taste = YatsuhashiTaste::Sesami;
             }
-        }
     }
 }

@@ -136,15 +136,22 @@ pub fn pop_yatsuhashi(
             .map(|(taste, address, direction)| (taste, address.clone(), direction))
             .filter(|(_, address, _)| *address == *next || *address == *current)
             .for_each(|(mut taste, address, mut direction)| {
-                if address == *next {
+                // 次の八つ橋が無味 => 今の味と方向をコピー
+                if address == *next && *taste == YatsuhashiTaste::default() {
                     *taste = migrate_taste.clone();
                     *direction = migrate_direction.clone()
-                } else if address == *current
+                }
+                // 今の八つ橋がヒーロー以外の味 => 味と方向を消去
+                else if address == *current
                     && *taste == migrate_taste.clone()
                     && *taste != YatsuhashiTaste::Sesami
                 {
                     *taste = YatsuhashiTaste::Tasteless;
                     *direction = YatsuhashiDirection::NoMove;
+                }
+                // 次の八つ橋がヒーロー => 結合
+                else if address == *next && *taste == YatsuhashiTaste::Sesami{
+                    
                 }
             });
     }

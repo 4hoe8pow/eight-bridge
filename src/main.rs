@@ -1,6 +1,9 @@
+use std::time::Duration;
+
 use bevy::{
     asset::AssetMetaCheck,
     prelude::*,
+    time::common_conditions::on_timer,
     window::{PresentMode, WindowTheme},
 };
 use ridge_service::{
@@ -57,9 +60,14 @@ fn main() {
                 .run_if(in_state(GameState::InGame)),
         )
         .add_systems(
-            PostUpdate,
-            (start_enemy_animation, lightup_yatsuhashi, pop_yatsuhashi)
+            Update,
+            pop_yatsuhashi
+                .run_if(on_timer(Duration::from_secs_f32(1.0)))
                 .run_if(in_state(GameState::InGame)),
+        )
+        .add_systems(
+            PostUpdate,
+            (start_enemy_animation, lightup_yatsuhashi).run_if(in_state(GameState::InGame)),
         )
         .add_systems(Last, bevy::window::close_on_esc)
         .run();
