@@ -14,7 +14,7 @@ use ridge_service::{
     install_studio,
     villains_usecase::{
         count_timer::start_timer,
-        fire_yatsuhashi::{cinnamon_timer_finished, FireEvent},
+        fire_yatsuhashi::{yatsuhashi_timer, FireEvent},
         setup_villains::*,
     },
     yatsuhashi_usecase::{
@@ -66,13 +66,13 @@ fn main() {
         )
         .add_systems(
             Update,
-            (operate_hero, cinnamon_timer_finished, fire, push_yatsuhashi)
+            (operate_hero, yatsuhashi_timer, fire, push_yatsuhashi)
                 .run_if(in_state(GameState::InGame)),
         )
         .add_systems(
             Update,
             pop_yatsuhashi
-                .run_if(on_timer(Duration::from_secs_f32(1.0)))
+                .run_if(on_timer(Duration::from_secs_f32(0.6)))
                 .run_if(in_state(GameState::InGame)),
         )
         .add_systems(

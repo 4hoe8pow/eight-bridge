@@ -50,11 +50,11 @@ pub fn push_yatsuhashi(
             }
             YatsuhashiDirection::FourOclock => {
                 let (drow, dcol) = if current_address.row < 6 {
-                    (-1, 2)
+                    (-1, 0)
                 } else {
                     match current_address.row == 6 {
                         true => (-1, 1),
-                        false => (-1, 0),
+                        false => (-1, 2),
                     }
                 };
                 Some(YatsuhashiAddress {
@@ -64,11 +64,11 @@ pub fn push_yatsuhashi(
             }
             YatsuhashiDirection::TwoOclock => {
                 let (drow, dcol) = if current_address.row > 5 {
-                    (1, 2)
+                    (1, 0)
                 } else {
                     match current_address.row == 5 {
                         true => (1, 1),
-                        false => (1, 0),
+                        false => (1, 2),
                     }
                 };
                 Some(YatsuhashiAddress {
