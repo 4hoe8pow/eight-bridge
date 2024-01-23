@@ -31,10 +31,11 @@ pub fn push_yatsuhashi(
             YatsuhashiDirection::EightOclock => {
                 let (drow, dcol) = if current_address.row < 6 {
                     (-1, -2)
-                } else if current_address.row == 6 {
-                    (-1, -1)
                 } else {
-                    (-1, 0)
+                    match current_address.row == 6 {
+                        true => (-1, -1),
+                        false => (-1, 0),
+                    }
                 };
                 Some(YatsuhashiAddress {
                     row: current_address.row + drow,
@@ -44,10 +45,11 @@ pub fn push_yatsuhashi(
             YatsuhashiDirection::FourOclock => {
                 let (drow, dcol) = if current_address.row < 6 {
                     (-1, 2)
-                } else if current_address.row == 6 {
-                    (-1, 1)
                 } else {
-                    (-1, 0)
+                    match current_address.row == 6 {
+                        true => (-1, 1),
+                        false => (-1, 0),
+                    }
                 };
                 Some(YatsuhashiAddress {
                     row: current_address.row + drow,
@@ -57,10 +59,11 @@ pub fn push_yatsuhashi(
             YatsuhashiDirection::TwoOclock => {
                 let (drow, dcol) = if current_address.row > 5 {
                     (1, 2)
-                } else if current_address.row == 5 {
-                    (1, 1)
                 } else {
-                    (1, 0)
+                    match current_address.row == 5 {
+                        true => (1, 1),
+                        false => (1, 0),
+                    }
                 };
                 Some(YatsuhashiAddress {
                     row: current_address.row + drow,
@@ -70,10 +73,11 @@ pub fn push_yatsuhashi(
             YatsuhashiDirection::TenOclock => {
                 let (drow, dcol) = if current_address.row > 5 {
                     (1, -2)
-                } else if current_address.row == 5 {
-                    (1, -1)
                 } else {
-                    (1, 0)
+                    match current_address.row == 5 {
+                        true => (1, -1),
+                        false => (1, 0),
+                    }
                 };
                 Some(YatsuhashiAddress {
                     row: current_address.row + drow,
@@ -101,6 +105,7 @@ pub fn push_yatsuhashi(
                     migrate_direction: direction.clone(),
                 })
             } else {
+                eprintln!("current:{:?}, next:{:?}", current_address, next_address);
                 event.send(YatsuhashiQueueEvent {
                     current: current_address.clone(),
                     next: current_address.clone(),
@@ -137,21 +142,22 @@ pub fn pop_yatsuhashi(
             .map(|(taste, address, direction)| (taste, address.clone(), direction))
             .filter(|(_, address, _)| *address == *next || *address == *current)
             .for_each(|(mut taste, address, mut direction)| {
-                // 次の八つ橋が無味 => 今の味と方向をコピー
-                if address == *next && *taste == YatsuhashiTaste::default() {
+                // 反射
+                if address == *next && next == current && *taste != YatsuhashiTaste::default() {
+                    *direction = migrate_direction.clone();
+                }
+                // 結合
+                else if address == *next && *taste == YatsuhashiTaste::Sesami {
+                }
+                // 進行
+                else if address == *next && *taste == YatsuhashiTaste::Tasteless {
                     *taste = migrate_taste.clone();
                     *direction = migrate_direction.clone();
                 }
-                // 今の八つ橋がヒーロー以外の味 => 味と方向を消去
-                else if address == *current
-                    && *taste == migrate_taste.clone()
-                    && *taste != YatsuhashiTaste::Sesami
-                {
+                // 残像消去
+                else if address == *current && *taste == migrate_taste.clone() {
                     *taste = YatsuhashiTaste::Tasteless;
                     *direction = YatsuhashiDirection::NoMove;
-                }
-                // 次の八つ橋がヒーロー => 結合
-                else if address == *next && *taste == YatsuhashiTaste::Sesami {
                 }
             });
     }
