@@ -1,15 +1,13 @@
-use bevy::prelude::*;
-
 /// 操作基準
-#[derive(Resource)]
-pub struct HeroPosition {
+#[derive(Default, Debug)]
+pub struct Hero {
     pub row: i8,
     pub col: i8,
     pub past_row: i8,
     pub past_col: i8,
 }
 
-impl HeroPosition {
+impl Hero {
     pub fn migrate(&mut self, drow: i8, dcol: i8) {
         self.past_row = self.row;
         self.past_col = self.col;
