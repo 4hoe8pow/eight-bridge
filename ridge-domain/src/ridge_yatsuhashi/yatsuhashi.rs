@@ -159,35 +159,6 @@ impl YatsuhashiAddress {
 
         next_direction
     }
-
-    pub fn foo_refelect(&self, direction: YatsuhashiDirection) -> YatsuhashiDirection {
-        let mut next_direction = YatsuhashiDirection::default();
-        if self.col < 0 {
-            if self.row > 5 && direction == YatsuhashiDirection::NineOclock {
-                next_direction = YatsuhashiDirection::FourOclock;
-            } else if self.row > 5 && direction == YatsuhashiDirection::TenOclock {
-                next_direction = YatsuhashiDirection::ThreeOclock;
-            } else if self.row <= 5 && direction == YatsuhashiDirection::EightOclock {
-                next_direction = YatsuhashiDirection::ThreeOclock;
-            } else if self.row <= 5 && direction == YatsuhashiDirection::NineOclock {
-                next_direction = YatsuhashiDirection::TwoOclock;
-            }
-        } else if self.row < 0 {
-            if direction == YatsuhashiDirection::FourOclock {
-                next_direction = YatsuhashiDirection::TwoOclock;
-            } else {
-                next_direction = YatsuhashiDirection::TenOclock;
-            }
-        } else if self.row > 11 {
-            if direction == YatsuhashiDirection::TwoOclock {
-                next_direction = YatsuhashiDirection::EightOclock;
-            } else {
-                next_direction = YatsuhashiDirection::FourOclock;
-            }
-        }
-
-        next_direction
-    }
 }
 
 /// 攻撃方向
