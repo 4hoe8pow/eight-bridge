@@ -7,7 +7,10 @@ use bevy::{
     window::{PresentMode, WindowTheme},
 };
 use ridge_service::{
-    hero_usecase::{create_hero::set_hero, operate_hero::operate_hero},
+    hero_usecase::{
+        create_hero::{init_hero, HeroPositions},
+        operate_hero::operate_hero,
+    },
     install_studio,
     villains_usecase::{
         count_timer::start_timer,
@@ -15,9 +18,10 @@ use ridge_service::{
         setup_villains::*,
     },
     yatsuhashi_usecase::{
+        bond::bond_yatsuhashi,
         factory::*,
         lightup::lightup_yatsuhashi,
-        migrate::{pop_yatsuhashi, push_yatsuhashi, YatsuhashiQueueEvent},
+        migrate::{pop_yatsuhashi, push_yatsuhashi, BondEvent, ReloadEvent},
     },
 };
 
@@ -46,13 +50,19 @@ fn main() {
         )
         .add_state::<GameState>()
         .add_event::<FireEvent>()
-        .add_event::<YatsuhashiQueueEvent>()
-        // 初期設定
+        .add_event::<ReloadEvent>()
+        .add_event::<BondEvent>()
         .add_systems(Startup, install_studio)
         // フィールドタイルの設置
+        .init_resource::<HeroPositions>()
         .add_systems(
             OnEnter(GameState::InGame),
-            (create_yatsuhashies, install_villains, set_hero, start_timer),
+            (
+                create_yatsuhashies,
+                install_villains,
+                init_hero,
+                start_timer,
+            ),
         )
         .add_systems(
             Update,
@@ -67,7 +77,8 @@ fn main() {
         )
         .add_systems(
             PostUpdate,
-            (start_enemy_animation, lightup_yatsuhashi).run_if(in_state(GameState::InGame)),
+            (start_enemy_animation, bond_yatsuhashi, lightup_yatsuhashi)
+                .run_if(in_state(GameState::InGame)),
         )
         .add_systems(Last, bevy::window::close_on_esc)
         .run();
