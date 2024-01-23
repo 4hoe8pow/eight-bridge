@@ -5,11 +5,17 @@ use ridge_domain::ridge_yatsuhashi::yatsuhashi::{
 
 /// 移動準備
 #[derive(Event)]
-pub struct YatsuhashiQueueEvent {
+pub struct ReloadEvent {
     pub current: YatsuhashiAddress,
     pub next: YatsuhashiAddress,
     pub migrate_taste: YatsuhashiTaste,
     pub migrate_direction: YatsuhashiDirection,
+}
+
+// 結合
+#[derive(Event)]
+pub struct BondEvent {
+    pub child: YatsuhashiAddress,
 }
 
 // 次の八つ橋が無味なら次の八つ橋に今の八つ橋の味を移し、自身を無味にする
@@ -23,7 +29,7 @@ pub fn push_yatsuhashi(
         ),
         With<Yatsuhashi>,
     >,
-    mut event: EventWriter<YatsuhashiQueueEvent>,
+    mut event: EventWriter<ReloadEvent>,
 ) {
     // a. 次の八つ橋の場所をしらべる
     for (direction, current_address, taste) in yatsuhashies.iter() {
@@ -98,15 +104,14 @@ pub fn push_yatsuhashi(
 
         if next_address.is_some() {
             if next_address.clone().unwrap().in_field() {
-                event.send(YatsuhashiQueueEvent {
+                event.send(ReloadEvent {
                     current: current_address.clone(),
                     next: next_address.clone().unwrap(),
                     migrate_taste: taste.clone(),
                     migrate_direction: direction.clone(),
                 })
             } else {
-                eprintln!("current:{:?}, next:{:?}", current_address, next_address);
-                event.send(YatsuhashiQueueEvent {
+                event.send(ReloadEvent {
                     current: current_address.clone(),
                     next: current_address.clone(),
                     migrate_taste: taste.clone(),
@@ -118,7 +123,7 @@ pub fn push_yatsuhashi(
 }
 
 pub fn pop_yatsuhashi(
-    mut events: EventReader<YatsuhashiQueueEvent>,
+    mut reload_events: EventReader<ReloadEvent>,
     mut yatsuhashies: Query<
         (
             &mut YatsuhashiTaste,
@@ -127,9 +132,10 @@ pub fn pop_yatsuhashi(
         ),
         With<Yatsuhashi>,
     >,
+    mut bond_event: EventWriter<BondEvent>,
 ) {
     // 次の八つ橋の味を調べる
-    for event in events.read() {
+    for event in reload_events.read() {
         let (current, next, migrate_taste, migrate_direction) = (
             &event.current,
             &event.next,
@@ -148,6 +154,9 @@ pub fn pop_yatsuhashi(
                 }
                 // 結合
                 else if address == *next && *taste == YatsuhashiTaste::Sesami {
+                    bond_event.send(BondEvent {
+                        child: current.clone(),
+                    })
                 }
                 // 進行
                 else if address == *next && *taste == YatsuhashiTaste::Tasteless {
