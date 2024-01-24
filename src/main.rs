@@ -72,7 +72,7 @@ fn main() {
         .add_systems(
             Update,
             pop_yatsuhashi
-                .run_if(on_timer(Duration::from_secs_f32(0.6)))
+                .run_if(on_timer(Duration::from_secs_f32(0.1)))
                 .run_if(in_state(GameState::InGame)),
         )
         .add_systems(

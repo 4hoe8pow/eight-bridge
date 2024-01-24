@@ -79,9 +79,9 @@ impl YatsuhashiAddress {
             }
         } else if self.row > 11 {
             if direction == YatsuhashiDirection::TwoOclock {
-                next_direction = YatsuhashiDirection::EightOclock;
-            } else {
                 next_direction = YatsuhashiDirection::FourOclock;
+            } else {
+                next_direction = YatsuhashiDirection::EightOclock;
             }
         } else if self.row == 0 && self.col > 11 {
             if direction == YatsuhashiDirection::ThreeOclock {
