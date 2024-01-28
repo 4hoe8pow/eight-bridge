@@ -10,6 +10,12 @@ impl HeroPositions {
     pub fn add_hero(&mut self, new_hero: Hero) {
         self.hero.push(new_hero);
     }
+
+    pub fn in_hexagon(self, hero_target: Hero) {
+        let neighbors = hero_target.ref_neighbor();
+
+        // checker in self
+    }
 }
 
 /// ヒーローポジショニング

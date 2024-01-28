@@ -6,3 +6,5 @@ pub mod lightup;
 pub mod bond;
 // 移動属性があるものついて移動
 pub mod migrate;
+// 得点
+pub mod purge;
