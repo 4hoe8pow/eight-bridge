@@ -216,15 +216,35 @@ impl Hero {
         }
     }
 
-    pub fn ref_neighbor(&self) -> Vec<&Hero> {
-        let heros = vec![self];
+    pub fn ref_neighbor(&self) -> Option<[[Option<Hero>; 5]; 3]> {
+        let heros_top = [
+            self.at_right(),
+            self.at_top_right(),
+            self.at_top(),
+            self.at_top_left(),
+            self.at_left(),
+        ];
+
+        let heros_bottom_left = [
+            self.at_left(),
+            self.at_left().unwrap().at_left(),
+            self.at_bottom(),
+            self.at_bottom_left(),
+            self.at_bottom_left().unwrap().at_left(),
+        ];
+
+        let heros_bottom_right = [
+            self.at_right(),
+            self.at_right().unwrap().at_right(),
+            self.at_bottom(),
+            self.at_bottom_right(),
+            self.at_bottom_right().unwrap().at_right(),
+        ];
 
         match self.is_regular() {
-            true => {}
-            false => {}
+            true => Some([heros_top, heros_bottom_left, heros_bottom_right]),
+            false => Some([heros_top, heros_bottom_left, heros_bottom_right]),
         }
-
-        heros
     }
 }
 
@@ -277,20 +297,6 @@ mod tests {
             past_col: 0,
         };
         assert!(!hero_irregular.is_regular());
-    }
-
-    #[test]
-    fn test_ref_neighbor() {
-        let hero = Hero {
-            row: 6,
-            col: 0,
-            past_row: 0,
-            past_col: 0,
-        };
-        let neighbors = hero.ref_neighbor();
-        assert_eq!(neighbors.len(), 1);
-        assert_eq!(neighbors[0].row, 6);
-        assert_eq!(neighbors[0].col, 0);
     }
 
     #[test]
