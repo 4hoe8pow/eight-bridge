@@ -23,6 +23,7 @@ use ridge_service::{
         factory::*,
         lightup::lightup_yatsuhashi,
         migrate::{pop_yatsuhashi, push_yatsuhashi, BondEvent, ReloadEvent},
+        purge::{purge_yatsuhashi, PurgeEvent},
     },
 };
 
@@ -53,6 +54,7 @@ fn main() {
         .add_event::<FireEvent>()
         .add_event::<ReloadEvent>()
         .add_event::<BondEvent>()
+        .add_event::<PurgeEvent>()
         .add_systems(Startup, install_studio)
         // フィールドタイルの設置
         .init_resource::<HeroPositions>()
@@ -78,7 +80,12 @@ fn main() {
         )
         .add_systems(
             PostUpdate,
-            (start_enemy_animation, bond_yatsuhashi, lightup_yatsuhashi)
+            (
+                start_enemy_animation,
+                bond_yatsuhashi,
+                purge_yatsuhashi,
+                lightup_yatsuhashi,
+            )
                 .run_if(in_state(GameState::InGame)),
         )
         .add_systems(Last, bevy::window::close_on_esc)
