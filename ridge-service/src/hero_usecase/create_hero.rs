@@ -11,10 +11,16 @@ impl HeroPositions {
         self.hero.push(new_hero);
     }
 
-    pub fn in_hexagon(self, hero_target: Hero) {
-        let neighbors = hero_target.ref_neighbor();
+    pub fn is_hexgon(&self, other_heros: &Vec<Hero>) -> bool {
+        for other_hero in other_heros {
+            debug!("{:?}", other_hero);
+            debug!("{:?}", self.hero.contains(other_hero));
 
-        // checker in self
+            if !self.hero.contains(other_hero) {
+                return false;
+            }
+        }
+        true
     }
 }
 
