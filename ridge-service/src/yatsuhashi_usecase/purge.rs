@@ -1,14 +1,20 @@
 use bevy::prelude::*;
-use ridge_domain::ridge_yatsuhashi::yatsuhashi::{
-    Yatsuhashi, YatsuhashiAddress, YatsuhashiDirection, YatsuhashiTaste,
+use ridge_domain::{
+    ridge_hero::hero::Hero,
+    ridge_yatsuhashi::yatsuhashi::{
+        Yatsuhashi, YatsuhashiAddress, YatsuhashiDirection, YatsuhashiTaste,
+    },
 };
 
 use crate::hero_usecase::create_hero::HeroPositions;
 
-use super::migrate::BondEvent;
+#[derive(Event)]
+pub struct PurgeEvent {
+    pub row: i8,
+    pub col: i8,
+}
 
 pub fn purge_yatsuhashi(
-    mut bond_events: EventReader<BondEvent>,
     mut yatsuhashies: Query<
         (
             &mut YatsuhashiTaste,
@@ -17,17 +23,22 @@ pub fn purge_yatsuhashi(
         ),
         With<Yatsuhashi>,
     >,
-    mut hero_positions: ResMut<HeroPositions>,
+    hero_positions: ResMut<HeroPositions>,
+    mut purge_trigger: EventWriter<PurgeEvent>,
 ) {
-    for event in bond_events.read() {
-        let child_yatsuhashi = &event.child;
-
-        yatsuhashies
-            .iter_mut()
-            .map(|(taste, address, direction)| (taste, address.clone(), direction))
-            .filter(|(_, address, _)| *address == *child_yatsuhashi)
-            .for_each(|(_, address, _)| {
-                // ポジショニング確認
-            });
+    for (mut taste, address, mut direction) in yatsuhashies.iter_mut() {
+        if *taste == YatsuhashiTaste::Sesami {
+            let x = Hero {
+                row: address.row,
+                col: address.col,
+                past_row: -1,
+                past_col: -1,
+            };
+            let other_heros = &x.ref_neighbor();
+            if x.is_regular() && hero_positions.is_hexgon(other_heros) {
+                *taste = YatsuhashiTaste::default();
+                *direction = YatsuhashiDirection::default();
+            }
+        }
     }
 }
