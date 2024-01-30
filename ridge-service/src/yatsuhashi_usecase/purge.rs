@@ -10,8 +10,7 @@ use crate::hero_usecase::create_hero::HeroPositions;
 
 #[derive(Event)]
 pub struct PurgeEvent {
-    pub row: i8,
-    pub col: i8,
+    pub hexagon: Vec<Hero>,
 }
 
 pub fn purge_yatsuhashi(
@@ -34,10 +33,14 @@ pub fn purge_yatsuhashi(
                 past_row: -1,
                 past_col: -1,
             };
-            let other_heros = &x.ref_neighbor();
+            let other_heros: &Vec<Hero> = &x.ref_neighbor();
+            eprintln!("HEROS::{:?}", other_heros);
+            eprintln!("IS_::{:?}", hero_positions.is_hexgon(other_heros));
+
             if x.is_regular() && hero_positions.is_hexgon(other_heros) {
                 *taste = YatsuhashiTaste::default();
                 *direction = YatsuhashiDirection::default();
+                eprintln!("{:?}", other_heros);
             }
         }
     }

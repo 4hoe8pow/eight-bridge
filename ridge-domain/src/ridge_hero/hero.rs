@@ -1,5 +1,5 @@
 /// 操作基準
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone, Copy)]
 pub struct Hero {
     pub row: i8,
     pub col: i8,
