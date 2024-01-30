@@ -216,35 +216,18 @@ impl Hero {
         }
     }
 
-    pub fn ref_neighbor(&self) -> Option<[[Option<Hero>; 5]; 3]> {
-        let heros_top = [
+    pub fn ref_neighbor(&self) -> Vec<Hero> {
+        vec![
             self.at_right(),
-            self.at_top_right(),
-            self.at_top(),
-            self.at_top_left(),
-            self.at_left(),
-        ];
-
-        let heros_bottom_left = [
-            self.at_left(),
-            self.at_left().unwrap().at_left(),
-            self.at_bottom(),
-            self.at_bottom_left(),
-            self.at_bottom_left().unwrap().at_left(),
-        ];
-
-        let heros_bottom_right = [
-            self.at_right(),
-            self.at_right().unwrap().at_right(),
             self.at_bottom(),
             self.at_bottom_right(),
-            self.at_bottom_right().unwrap().at_right(),
-        ];
-
-        match self.is_regular() {
-            true => Some([heros_top, heros_bottom_left, heros_bottom_right]),
-            false => Some([heros_top, heros_bottom_left, heros_bottom_right]),
-        }
+            self.at_bottom_right().and_then(|h| h.at_right()),
+            self.at_right().and_then(|h| h.at_right()),
+        ]
+        .into_iter()
+        .flatten()
+        .filter_map(Some)
+        .collect()
     }
 }
 
@@ -443,5 +426,47 @@ mod tests {
         assert_eq!(hero11.at_right(), None);
         assert_eq!(hero11.at_bottom_right(), None);
         assert_eq!(hero10.at_top_right(), hero12.at_bottom_left());
+    }
+
+    #[test]
+    fn test_ref_neighbor() {
+        let hero = Hero {
+            row: 1,
+            col: 1,
+            past_row: 0,
+            past_col: 0,
+        };
+        let neighbors = hero.ref_neighbor();
+        assert_eq!(neighbors.len(), 5);
+        assert!(neighbors.contains(&Hero {
+            row: 1,
+            col: 2,
+            past_row: 0,
+            past_col: 0
+        }));
+        assert!(neighbors.contains(&Hero {
+            row: 1,
+            col: 3,
+            past_row: 0,
+            past_col: 0
+        }));
+        assert!(neighbors.contains(&Hero {
+            row: 0,
+            col: 0,
+            past_row: 0,
+            past_col: 0
+        }));
+        assert!(neighbors.contains(&Hero {
+            row: 0,
+            col: 1,
+            past_row: 0,
+            past_col: 0
+        }));
+        assert!(neighbors.contains(&Hero {
+            row: 0,
+            col: 2,
+            past_row: 0,
+            past_col: 0
+        }));
     }
 }
