@@ -23,7 +23,7 @@ use ridge_service::{
         factory::*,
         lightup::lightup_yatsuhashi,
         migrate::{pop_yatsuhashi, push_yatsuhashi, BondEvent, ReloadEvent},
-        purge::{purge_yatsuhashi, PurgeEvent},
+        purge::{purge_yatsuhashi, scoring, PurgeEvent},
     },
 };
 
@@ -88,6 +88,7 @@ fn main() {
             )
                 .run_if(in_state(GameState::InGame)),
         )
+        .add_systems(Last, scoring.run_if(in_state(GameState::InGame)))
         .add_systems(Last, bevy::window::close_on_esc)
         .run();
 }
