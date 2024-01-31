@@ -233,10 +233,7 @@ impl Hero {
 
 impl PartialEq for Hero {
     fn eq(&self, other: &Self) -> bool {
-        self.row == other.row
-            && self.col == other.col
-            && self.past_row == other.past_row
-            && self.past_col == other.past_col
+        self.row == other.row && self.col == other.col
     }
 }
 
@@ -429,7 +426,77 @@ mod tests {
     }
 
     #[test]
-    fn test_ref_neighbor() {
+    fn test_top_offset() {
+        let hero1 = Hero {
+            row: 8,
+            col: 0,
+            past_row: 0,
+            past_col: 0,
+        };
+        assert_eq!(hero1.at_left(), None);
+        let hero2 = Hero {
+            row: 8,
+            col: 3,
+            past_row: 0,
+            past_col: 0,
+        };
+        let hero3 = Hero {
+            row: 8,
+            col: 5,
+            past_row: 0,
+            past_col: 0,
+        };
+        assert_eq!(hero2.at_right(), hero3.at_left());
+        let hero4 = Hero {
+            row: 8,
+            col: 6,
+            past_row: 0,
+            past_col: 0,
+        };
+        let hero5 = Hero {
+            row: 9,
+            col: 4,
+            past_row: 0,
+            past_col: 0,
+        };
+        assert_eq!(hero4.at_top_left(), Some(hero5));
+        let hero6 = Hero {
+            row: 9,
+            col: 1,
+            past_row: 0,
+            past_col: 0,
+        };
+        let hero7 = Hero {
+            row: 7,
+            col: 3,
+            past_row: 0,
+            past_col: 0,
+        };
+        assert_eq!(hero6.at_bottom(), hero7.at_top());
+        let hero8 = Hero {
+            row: 8,
+            col: 17,
+            past_row: 0,
+            past_col: 0,
+        };
+        let hero9 = Hero {
+            row: 10,
+            col: 13,
+            past_row: 0,
+            past_col: 0,
+        };
+        assert_eq!(hero8.at_top_left(), hero9.at_bottom_right());
+        let hero10 = Hero {
+            row: 11,
+            col: 11,
+            past_row: 0,
+            past_col: 0,
+        };
+        assert_eq!(hero10.at_top(), None);
+    }
+
+    #[test]
+    fn test_ref_neighbor_in_bottom() {
         let hero = Hero {
             row: 1,
             col: 1,
@@ -465,6 +532,54 @@ mod tests {
         assert!(neighbors.contains(&Hero {
             row: 0,
             col: 2,
+            past_row: 0,
+            past_col: 0
+        }));
+    }
+
+    #[test]
+    fn test_ref_neighbor_in_top() {
+        let hero = Hero {
+            row: 8,
+            col: 8,
+            past_row: 0,
+            past_col: 0,
+        };
+        let neighbors = hero.ref_neighbor();
+        assert_eq!(neighbors.len(), 5);
+        assert!(neighbors.contains(&Hero {
+            row: 8,
+            col: 9,
+            past_row: 0,
+            past_col: 0
+        }));
+        assert!(neighbors.contains(&Hero {
+            row: 8,
+            col: 10,
+            past_row: 0,
+            past_col: 0
+        }));
+        assert!(neighbors.contains(&Hero {
+            row: 7,
+            col: 9,
+            past_row: 0,
+            past_col: 0
+        }));
+        assert!(neighbors.contains(&Hero {
+            row: 7,
+            col: 10,
+            past_row: 0,
+            past_col: 0
+        }));
+        assert!(neighbors.contains(&Hero {
+            row: 7,
+            col: 11,
+            past_row: 0,
+            past_col: 0
+        }));
+        assert!(!neighbors.contains(&Hero {
+            row: 7,
+            col: 8,
             past_row: 0,
             past_col: 0
         }));
