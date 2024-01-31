@@ -11,6 +11,10 @@ impl HeroPositions {
         self.hero.push(new_hero);
     }
 
+    pub fn remove_hero(&mut self, hero: &Hero) {
+        self.hero.retain(|h| h != hero);
+    }
+
     pub fn is_hexgon(&self, other_heros: &Vec<Hero>) -> bool {
         for other_hero in other_heros {
             if !self.hero.contains(other_hero) {
@@ -38,17 +42,52 @@ mod tests {
     #[test]
     fn test_is_hexgon() {
         // Prepare some heroes
-        let hero1 = Hero { row: 0, col: 0, past_row: 0, past_col: 0 };
-        let hero2 = Hero { row: 1, col: 0, past_row: 1, past_col: 0 };
-        let hero3 = Hero { row: 1, col: 1, past_row: 1, past_col: 1 };
-        let hero4 = Hero { row: 0, col: 1, past_row: 0, past_col: 1 };
-        let hero5 = Hero { row: -1, col: 1, past_row: -1, past_col: 1 };
-        let hero6 = Hero { row: -1, col: 0, past_row: -1, past_col: 0 };
-        let hero7 = Hero { row: 3, col: 3, past_row: -1, past_col: 0 };
+        let hero1 = Hero {
+            row: 0,
+            col: 0,
+            past_row: 0,
+            past_col: 0,
+        };
+        let hero2 = Hero {
+            row: 1,
+            col: 0,
+            past_row: 1,
+            past_col: 0,
+        };
+        let hero3 = Hero {
+            row: 1,
+            col: 1,
+            past_row: 1,
+            past_col: 1,
+        };
+        let hero4 = Hero {
+            row: 0,
+            col: 1,
+            past_row: 0,
+            past_col: 1,
+        };
+        let hero5 = Hero {
+            row: -1,
+            col: 1,
+            past_row: -1,
+            past_col: 1,
+        };
+        let hero6 = Hero {
+            row: -1,
+            col: 0,
+            past_row: -1,
+            past_col: 0,
+        };
+        let hero7 = Hero {
+            row: 3,
+            col: 3,
+            past_row: -1,
+            past_col: 0,
+        };
 
         // Create HeroPositions instance
         let hero_positions = HeroPositions {
-            hero:vec![hero1, hero2, hero3, hero4, hero5, hero6],
+            hero: vec![hero1, hero2, hero3, hero4, hero5, hero6],
         };
         // Test with hexagon heroes
         let hexagon_heroes = vec![hero2, hero3, hero4, hero5, hero6];
