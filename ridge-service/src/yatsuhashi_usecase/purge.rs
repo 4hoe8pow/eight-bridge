@@ -22,7 +22,7 @@ pub fn purge_yatsuhashi(
         ),
         With<Yatsuhashi>,
     >,
-    hero_positions: ResMut<HeroPositions>,
+    mut hero_positions: ResMut<HeroPositions>,
     mut purge_trigger: EventWriter<PurgeEvent>,
 ) {
     for (mut taste, address, mut direction) in yatsuhashies.iter_mut() {
@@ -34,14 +34,39 @@ pub fn purge_yatsuhashi(
                 past_col: -1,
             };
             let other_heros: &Vec<Hero> = &x.ref_neighbor();
-            eprintln!("HEROS::{:?}", other_heros);
-            eprintln!("IS_::{:?}", hero_positions.is_hexgon(other_heros));
 
-            if x.is_regular() && hero_positions.is_hexgon(other_heros) {
+            if x.is_regular()
+                && x.col < x.my_threshold() - 1
+                && hero_positions.is_hexgon(other_heros)
+            {
                 *taste = YatsuhashiTaste::default();
                 *direction = YatsuhashiDirection::default();
-                eprintln!("{:?}", other_heros);
+                // other_heros をすべてhero_positionsから削除
+                other_heros
+                    .iter()
+                    .for_each(|hero| hero_positions.remove_hero(hero));
+
+                purge_trigger.send(PurgeEvent {
+                    hexagon: other_heros.to_vec(),
+                });
             }
         }
+    }
+}
+
+pub fn scoring(
+    mut yatsuhashies: Query<
+        (
+            &mut YatsuhashiTaste,
+            &mut YatsuhashiAddress,
+            &mut YatsuhashiDirection,
+        ),
+        With<Yatsuhashi>,
+    >,
+    mut purge_trigger: EventReader<PurgeEvent>,
+) {
+    for event in purge_trigger.read() {
+        let hexgon = &event.hexagon;
+        eprintln!("{:?}", hexgon);
     }
 }
